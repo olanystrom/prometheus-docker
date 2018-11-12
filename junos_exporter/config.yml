@@ -1,0 +1,12 @@
+targets:
+  - srx.enskede.local
+
+features:
+  bgp: false
+  ospf: false
+  isis: false
+  l2circuit: false
+  environment: true
+  routes: true
+  routing_engine: true
+  interface_diagnostic: true
