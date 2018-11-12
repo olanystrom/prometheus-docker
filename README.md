@@ -1,18 +1,16 @@
-dockprom
+Prometheus Docker
 ========
 
 A monitoring solution for Docker hosts and containers with [Prometheus](https://prometheus.io/), [Grafana](http://grafana.org/), [cAdvisor](https://github.com/google/cadvisor),
 [NodeExporter](https://github.com/prometheus/node_exporter) and alerting with [AlertManager](https://github.com/prometheus/alertmanager).
-
-***If you're looking for the Docker Swarm version please go to [stefanprodan/swarmprom](https://github.com/stefanprodan/swarmprom)***
 
 ## Install
 
 Clone this repository on your Docker host, cd into dockprom directory and run compose up:
 
 ```bash
-git clone https://github.com/stefanprodan/dockprom
-cd dockprom
+git clone https://github.com/olanystrom/prometheus-docker
+cd prometheus-docker
 
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
 ```
@@ -31,22 +29,14 @@ Containers:
 * NodeExporter (host metrics collector)
 * cAdvisor (containers metrics collector)
 * Caddy (reverse proxy and basic auth provider for prometheus and alertmanager)
+* snmp_exporter
+* junos_exporter
+* unifi_exporter
 
 ## Setup Grafana
 
-Navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up. The config file can be added directly in grafana part like this
-```
-grafana:
-  image: grafana/grafana:5.2.4
-  env_file:
-    - config
+Navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up.
 
-```
-and the config file format should have this content
-```
-GF_SECURITY_ADMIN_USER=admin
-GF_SECURITY_ADMIN_PASSWORD=changeme
-GF_USERS_ALLOW_SIGN_UP=false
 ```
 If you want to change the password, you have to remove this entry, otherwise the change will not take effect
 ```
@@ -281,19 +271,6 @@ To push data, simply execute:
     echo "some_metric 3.14" | curl --data-binary @- http://user:password@localhost:9091/metrics/job/some_job
 
 Please replace the `user:password` part with your user and password set in the initial configuration (default: `admin:admin`).
-
-## Updating Grafana to v5.2.2
-
-[In Grafana versions >= 5.1 the id of the grafana user has been changed](http://docs.grafana.org/installation/docker/#migration-from-a-previous-version-of-the-docker-container-to-5-1-or-later). Unfortunately this means that files created prior to 5.1 won’t have the correct permissions for later versions.
-
-| Version |   User  | User ID |
-|:-------:|:-------:|:-------:|
-|  < 5.1  | grafana |   104   |
-|  \>= 5.1 | grafana |   472   |
-
-There are two possible solutions to this problem.
-- Change ownership from 104 to 472
-- Start the upgraded container as user 104
 
 ##### Specifying a user in docker-compose.yml
 
